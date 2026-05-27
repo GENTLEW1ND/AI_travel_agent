@@ -32,7 +32,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 class TravelState(TypedDict):
-    message: Annotated[list[AnyMessage], operator.add]
+    messages: Annotated[list[AnyMessage], operator.add]
     user_query: str
     flight_results: str
     hotel_results: str
@@ -52,12 +52,12 @@ def flight_agent(state: TravelState):
     }
     
 def hotel_agent(state: TravelState):
-    query = f"Best hostels for {state["user_query"]}"
+    query = f"Best hostels for {state['user_query']}"
     hotel_result = tavily_search(query)
     
     return{
         "hotel_results" : hotel_result,
-        "message": [
+        "messages": [
             AIMessage(content = f"Hotel information fetched")
         ],
         "llm_calls": state.get("llm_calls", 0) + 1
@@ -75,16 +75,16 @@ def itinerary_agent(state: TravelState):
         Hotel Results:
         {state['hotel_results']}
     """
-    response = llm.invoke({
+    response = llm.invoke([
         SystemMessage(
-            content = "You are an expernt travel planner"
+            content = "You are an expert travel planner"
         ),
         HumanMessage(content=prompt)
-    })
+    ])
     
     return{
-        "Itinerary" : response.content,
-        "message": [response],
+        "itinerary" : response.content,
+        "messages": [response],
         "llm_calls": state.get("llm_calls", 0) + 1
     }
     
@@ -100,12 +100,15 @@ def final_agent(state: TravelState):
         Itinerary:
         {state['itinerary']}
     """
-    response = llm.invoke({
-        HumanMessage(content=final_prompt)
-    })
+    response = llm.invoke([
+    SystemMessage(
+        content="You are a helpful travel assistant"
+    ),
+    HumanMessage(content=final_prompt)
+    ])
     
     return{
-        "message": [response],
+        "messages": [response],
         "llm_calls": state.get("llm_calls", 0) + 1
     }
     
@@ -114,7 +117,7 @@ graph = StateGraph(TravelState)
 #Creating the nodes
 graph.add_node("flight_agent", flight_agent)
 graph.add_node("hotel_agent", hotel_agent)
-graph.add_node("itinenary_agent", itinerary_agent)
+graph.add_node("itinerary_agent", itinerary_agent)
 graph.add_node("final_agent", final_agent)
 #Creating the edges
 graph.add_edge(START, "flight_agent")
@@ -125,10 +128,40 @@ graph.add_edge("final_agent", END)
 
 
 ##Working the with the database for chat history
-_conn = psycopg.connect(DATABASE_URL)
+_conn = psycopg.connect(DATABASE_URL, autocommit=True)
 checkpointer = PostgresSaver(_conn)
 checkpointer.setup()
 
 
 ##Compiling the langgraph
 app = graph.compile(checkpointer=checkpointer)
+
+
+if __name__=="__main__":
+    config = {
+        "configurable":{
+            "thread_id": "user_raj"
+        }
+    }
+    
+    user_input = input("Enter your travel request: ")
+    
+    result = app.invoke(
+        {
+            "message": [
+                HumanMessage(content=user_input)
+            ],
+            "user_query": user_input,
+            "flight_results": "",
+            "hotel_results": "",
+            "itinerary": "",
+            "llm_calls": 0
+        },
+        config=config
+    )
+    
+    print("\nFinal Response:\n")
+    
+    for msg in result["messages"]:
+        print(msg.content)
+        print("\n --------------------------------------- \n")
