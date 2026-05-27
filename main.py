@@ -109,16 +109,26 @@ def final_agent(state: TravelState):
         "llm_calls": state.get("llm_calls", 0) + 1
     }
     
-    
+#Creating the graph for langgraph    
 graph = StateGraph(TravelState)
-
+#Creating the nodes
 graph.add_node("flight_agent", flight_agent)
 graph.add_node("hotel_agent", hotel_agent)
 graph.add_node("itinenary_agent", itinerary_agent)
 graph.add_node("final_agent", final_agent)
-
+#Creating the edges
 graph.add_edge(START, "flight_agent")
 graph.add_edge("flight_agent", "hotel_agent")
 graph.add_edge("hotel_agent", "itinerary_agent")
 graph.add_edge("itinerary_agent", "final_agent")
 graph.add_edge("final_agent", END)
+
+
+##Working the with the database for chat history
+_conn = psycopg.connect(DATABASE_URL)
+checkpointer = PostgresSaver(_conn)
+checkpointer.setup()
+
+
+##Compiling the langgraph
+app = graph.compile(checkpointer=checkpointer)
