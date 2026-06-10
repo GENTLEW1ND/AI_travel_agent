@@ -148,14 +148,12 @@ def render_sidebar():
             st.markdown(
                 f"""
                 <div class="session-card">
-
                     <div class="session-label">
                         🚀 Active Trip
                     </div>
                     <div class="session-id">
                         {st.session_state.active_trip}
                     </div>
-
                 </div>
                 """,
                 unsafe_allow_html=True
