@@ -12,6 +12,24 @@ if not DATABASE_URL:
         "DATABASE_URL not found. Check your .env file."
     )
 
+def init_db():
+
+    with psycopg.connect(DATABASE_URL) as conn:
+
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS trips (
+                    trip_id VARCHAR(255) PRIMARY KEY,
+                    user_id VARCHAR(255) NOT NULL,
+                    destination VARCHAR(255) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+        conn.commit()
+
+
 def create_trip(user_id, destination):
 
     trip_id = (

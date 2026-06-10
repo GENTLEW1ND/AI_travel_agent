@@ -117,8 +117,20 @@ def run_pipeline(user_query, thread_id):
         unsafe_allow_html=True
     )
     
-    # Download button
-    filename, file_content = save_travel_plan(user_query, thread_id, collected)
+    
+    try:
+        filename, file_content = save_travel_plan(
+            user_query,
+            thread_id,
+            collected
+        )
+
+        st.success("save_plan completed")
+
+    except Exception as e:
+            st.error(f"save_plan failed: {e}")
+            raise
+    
     st.download_button(
         "⬇️ Download Journey",
         data=file_content,

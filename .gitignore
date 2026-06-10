@@ -1,3 +1,33 @@
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
 Langgraph_venv/
+venv/
+.venv/
+
+# Environment Variables
 .env
+
+# Streamlit
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+
+# Local Travel Plans 
+travel_plans/
+
+# Logs
+*.log

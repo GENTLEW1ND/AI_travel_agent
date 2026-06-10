@@ -20,6 +20,10 @@ from frontend.components.hero import render_hero
 from frontend.components.destination_strip import render_destination_strip
 from frontend.components.trip_input import render_trip_input
 from frontend.components.sidebar import render_sidebar
+from frontend.utils.trip_manager import init_db
+
+#create a table first in postgressql
+init_db()
 
 # Sidebar
 trip_id = render_sidebar()
@@ -70,4 +74,4 @@ if generate and user_query:
         trip_id
     )
 
-    st.rerun()
+    # st.rerun()

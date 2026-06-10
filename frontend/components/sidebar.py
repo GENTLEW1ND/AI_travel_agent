@@ -152,7 +152,6 @@ def render_sidebar():
                     <div class="session-label">
                         🚀 Active Trip
                     </div>
-
                     <div class="session-id">
                         {st.session_state.active_trip}
                     </div>
