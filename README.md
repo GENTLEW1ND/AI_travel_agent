@@ -1,3 +1,12 @@
+---
+title: Orbitly
+emoji: 🌌
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 # 🌌 Orbitly – AI Multi-Agent Travel Planner
 
 Orbitly is an AI-powered travel planning assistant built using LangGraph, Groq LLMs, PostgreSQL, Tavily Search, and Streamlit.
