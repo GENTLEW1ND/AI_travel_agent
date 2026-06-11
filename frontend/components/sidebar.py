@@ -191,7 +191,7 @@ def render_sidebar():
             "🧠 Groq · LLaMA 3.3",
             "🐘 PostgreSQL",
             "🔍 Tavily Search",
-            "🌦 Weather Intelligence"
+            "✈️ Aviation Search"
         ]
 
         for tech in tech_stack:
@@ -215,9 +215,8 @@ def render_sidebar():
         )
 
         agents = [
-            "🌦 ClimateMind AI",
+            "✈️ Aviation AI",
             "🏨 StaySync AI",
-            "🍜 LocalLens AI",
             "🗺 RouteMind AI",
             "🧠 Orbit Core"
         ]
