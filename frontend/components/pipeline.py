@@ -125,7 +125,7 @@ def run_pipeline(user_query, thread_id):
             collected
         )
 
-        st.success("save_plan completed")
+        # st.success("save_plan completed")
 
     except Exception as e:
             st.error(f"save_plan failed: {e}")

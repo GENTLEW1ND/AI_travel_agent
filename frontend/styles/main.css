@@ -342,12 +342,23 @@ button[kind="header"]:hover {
 }
 
 /* ============ SIDEBAR ============ */
+.sidebar-logo-outer-div {
+    display: flex;
+}
 .sidebar-logo {
     font-size: 2rem;
     font-weight: 800;
     background: linear-gradient(90deg, #ffffff, #8cbcff, #b69cff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+.sidebar-logo2 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ffffff, #8cbcff, #b69cff);
+    -webkit-background-clip: text; 
     background-clip: text;
     margin-bottom: 0.5rem;
 }
@@ -390,6 +401,65 @@ button[kind="header"]:hover {
     padding: 0.8rem 1rem !important;
 }
 
+
+/* User avatar */
+.user-avatar {
+    border: 2px solid rgba(252, 0, 225, 0.25);
+    color: rgba(252, 0, 225, 0.8);
+}
+
+/* User avatar hover */
+.user-avatar:hover {
+    background-color: rgba(252, 0, 225, 0.54);
+    color: white;
+    transform: scale(1.08);
+}
+
+/* Assistant avatar */
+.assistant-avatar {
+    border: 2px solid rgba(43, 89, 255, 0.25);
+    color: rgba(43, 89, 255, 0.9);
+}
+
+/* Assistant avatar hover */
+.assistant-avatar:hover {
+    background-color: rgba(43, 89, 255, 0.69);
+    color: white;
+    transform: scale(1.08);
+}
+
+/* Message bubble */
+.message-content {
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 80%;
+    word-wrap: break-word;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* User bubble */
+.user-message .message-content {
+    background-color: rgba(252, 0, 225, 0.08);
+    border: 1px solid rgba(252, 0, 227, 0.06);
+}
+
+/* Assistant bubble */
+.assistant-message .message-content {
+    background-color: rgba(43, 89, 255, 0.08);
+    border: 1px solid rgba(43, 89, 255, 0.06);
+}
+
+/* Optional: glow effect on hover */
+.user-message:hover .message-content {
+    box-shadow: 0 0 12px rgba(252, 0, 225, 0.12);
+}
+
+.assistant-message:hover .message-content {
+    box-shadow: 0 0 12px rgba(43, 89, 255, 0.12);
+} */
 /* ============ AGENT PIPELINE ============ */
 .section-title {
     font-size: 1.4rem;

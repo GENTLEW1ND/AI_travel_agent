@@ -50,8 +50,13 @@ def render_sidebar():
         # Logo
         st.markdown(
             """
+            <div class="sidebar-logo-outer-div">
+            <div class="sidebar-logo2">
+                🌌
+            </div>
             <div class="sidebar-logo">
-                🌌 Orbitly
+                Orbitly
+            </div>
             </div>
             """,
             unsafe_allow_html=True
@@ -134,8 +139,18 @@ def render_sidebar():
 
             for trip_id, destination in trips:
 
+                is_active = (
+                    st.session_state.active_trip == trip_id
+                )
+
+                label = (
+                    f"✅ {destination}"
+                    if is_active
+                    else f"🧳 {destination}"
+                )
+
                 if st.button(
-                    f"🧳 {destination}",
+                    label,
                     key=trip_id,
                     use_container_width=True
                 ):
