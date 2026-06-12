@@ -10,6 +10,8 @@ st.set_page_config(
     layout="wide"
 )
 
+print("1. App starting") #debug
+
 # Load CSS
 from frontend.styles.load_css import load_css
 
@@ -22,13 +24,17 @@ from frontend.components.trip_input import render_trip_input
 from frontend.components.sidebar import render_sidebar
 from frontend.utils.trip_manager import init_db
 
+print("2. Imported init_db") #debug
+
 #create a table first in postgressql
 init_db()
+
+print("3. init_db completed") # debug
 
 # Sidebar
 trip_id = render_sidebar()
 
-
+print("4. Sidebar rendered") #debug
 
 if not trip_id:
     st.info(
@@ -45,6 +51,8 @@ config = {
 }
 
 snapshot = travel_graph.get_state(config)
+
+print("5. travel_graph imported") #debug
 
 render_hero()
 render_destination_strip()
@@ -64,6 +72,8 @@ if snapshot and snapshot.values:
                 st.write(msg.content)
 
 user_query, generate = render_trip_input()
+
+print("6. get_state completed") #debug
 
 if generate and user_query:
 
