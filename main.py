@@ -311,7 +311,7 @@ _conn = psycopg.connect(
 
 checkpointer = PostgresSaver(_conn)
 
-checkpointer.setup()
+# checkpointer.setup()
 
 # ==========================
 # COMPILE GRAPH

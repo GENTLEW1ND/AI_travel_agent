@@ -41,8 +41,15 @@ if not trip_id:
         "🌍 Create a trip from the sidebar to begin planning."
     )
     st.stop()
+    
 
-from main import app as travel_graph
+@st.cache_resource
+def get_graph():
+    from main import app
+    return app
+
+travel_graph = get_graph()
+
 
 config = {
     "configurable": {
