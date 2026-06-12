@@ -21,6 +21,8 @@ from langchain_groq import ChatGroq
 from tools.tavily_tool import tavily_search
 from tools.flight_tool import search_flight
 
+from main import app
+
 
 # ==========================
 # LOAD ENV
@@ -304,12 +306,33 @@ graph.add_edge("final_agent", END)
 # POSTGRES CHECKPOINTER
 # ==========================
 
+print("MAIN.PY STARTED")
+
+print("Connecting DB...")
+
 _conn = psycopg.connect(
     DATABASE_URL,
     autocommit=True
 )
 
+print("DB Connected")
+
 checkpointer = PostgresSaver(_conn)
+
+print("Checkpointer Created")
+
+
+def create_app():
+
+    print("Compiling Graph...")
+
+    app = graph.compile(
+        checkpointer=checkpointer
+    )
+
+    print("Graph Compiled")
+
+    return app
 
 # checkpointer.setup()
 
@@ -317,9 +340,9 @@ checkpointer = PostgresSaver(_conn)
 # COMPILE GRAPH
 # ==========================
 
-app = graph.compile(
-    checkpointer=checkpointer
-)
+# app = graph.compile(
+#     checkpointer=checkpointer
+# )
 
 # ==========================
 # LOCAL TESTING

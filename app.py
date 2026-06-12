@@ -45,8 +45,16 @@ if not trip_id:
 
 @st.cache_resource
 def get_graph():
-    from main import app
-    return app
+
+    print("Loading Graph...")
+
+    from main import create_app
+
+    graph = create_app()
+
+    print("Graph Loaded")
+
+    return graph
 
 travel_graph = get_graph()
 
