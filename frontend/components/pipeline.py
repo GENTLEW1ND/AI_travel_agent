@@ -34,7 +34,8 @@ def run_pipeline(user_query, thread_id):
     status_text = st.empty()
     
     try:
-        for i, chunk in enumerate(create_app.stream(
+        travel_graph = create_app()
+        for i, chunk in enumerate(travel_graph.stream(
             {
                 "messages": [HumanMessage(content=user_query)],
                 "user_query": user_query,
