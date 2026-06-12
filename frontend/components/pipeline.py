@@ -5,7 +5,7 @@ from langchain_core.messages import HumanMessage
 from frontend.constants import AGENT_META
 from frontend.utils.save_plan import save_travel_plan
 
-from main import create_app
+from frontend.utils.graph_manager import get_graph
 
 
 def run_pipeline(user_query, thread_id):
@@ -34,7 +34,7 @@ def run_pipeline(user_query, thread_id):
     status_text = st.empty()
     
     try:
-        travel_graph = create_app()
+        travel_graph = get_graph()
         for i, chunk in enumerate(travel_graph.stream(
             {
                 "messages": [HumanMessage(content=user_query)],

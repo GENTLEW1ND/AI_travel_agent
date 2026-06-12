@@ -306,33 +306,18 @@ graph.add_edge("final_agent", END)
 # POSTGRES CHECKPOINTER
 # ==========================
 
-print("MAIN.PY STARTED")
-
-print("Connecting DB...")
-
-_conn = psycopg.connect(
-    DATABASE_URL,
-    autocommit=True
-)
-
-print("DB Connected")
-
-checkpointer = PostgresSaver(_conn)
-
-print("Checkpointer Created")
-
-
 def create_app():
 
-    print("Compiling Graph...")
-
-    app = graph.compile(
-        checkpointer=checkpointer
+    conn = psycopg.connect(
+        DATABASE_URL,
+        autocommit=True
     )
 
-    print("Graph Compiled")
+    checkpointer = PostgresSaver(conn)
 
-    return app
+    return graph.compile(
+        checkpointer=checkpointer
+    )
 
 # checkpointer.setup()
 

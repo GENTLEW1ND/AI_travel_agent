@@ -23,6 +23,7 @@ from frontend.components.destination_strip import render_destination_strip
 from frontend.components.trip_input import render_trip_input
 from frontend.components.sidebar import render_sidebar
 from frontend.utils.trip_manager import init_db
+from frontend.utils.graph_manager import get_graph
 
 print("2. Imported init_db") #debug
 
@@ -43,18 +44,6 @@ if not trip_id:
     st.stop()
     
 
-@st.cache_resource
-def get_graph():
-
-    print("Loading Graph...")
-
-    from main import create_app
-
-    graph = create_app()
-
-    print("Graph Loaded")
-
-    return graph
 
 travel_graph = get_graph()
 
@@ -65,9 +54,13 @@ config = {
     }
 }
 
-snapshot = travel_graph.get_state(config)
 
-print("5. travel_graph imported") #debug
+try:
+    snapshot = travel_graph.get_state(config)
+except Exception as e:
+    print(f"State retrieval failed: {e}")
+    snapshot = None
+
 
 render_hero()
 render_destination_strip()
