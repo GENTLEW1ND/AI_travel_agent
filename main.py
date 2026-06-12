@@ -21,7 +21,7 @@ from langchain_groq import ChatGroq
 from tools.tavily_tool import tavily_search
 from tools.flight_tool import search_flight
 
-from main import app
+
 
 
 # ==========================
@@ -360,7 +360,7 @@ if __name__ == "__main__":
         }
     }
 
-    result = app.invoke(
+    result = create_app.invoke(
         {
             "messages": [
                 HumanMessage(content=user_input)
