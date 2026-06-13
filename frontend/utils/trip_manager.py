@@ -69,7 +69,7 @@ def create_trip(user_id, destination):
 
 
 def get_trips(user_id):
-
+    print(f"Loading trips for user: {user_id}")
     with psycopg.connect(DATABASE_URL) as conn:
 
         with conn.cursor() as cur:

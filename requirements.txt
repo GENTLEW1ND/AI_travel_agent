@@ -13,4 +13,4 @@ python-dotenv
 tavily-python
 requests
 streamlit
-streamlit-cookies-manager
+streamlit-local-storage

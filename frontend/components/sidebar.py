@@ -1,62 +1,46 @@
-import random
+import uuid
 import streamlit as st
-from streamlit_cookies_manager import EncryptedCookieManager
+
+from streamlit_local_storage import LocalStorage
 
 from frontend.utils.trip_manager import (
     create_trip,
     get_trips
 )
 
-
-def generate_user_id():
-
-    names = [
-        "orbit",
-        "nova",
-        "astro",
-        "vega",
-        "luna",
-        "cosmo"
-    ]
-
-    return f"{random.choice(names)}-{random.randint(1000,9999)}"
+local_storage = LocalStorage()
 
 
+def get_user_id():
 
-cookies = EncryptedCookieManager(
-    prefix="orbitly_",
-    password="orbitly_secret_key"
-)
-if not cookies.ready():
-    st.stop()
+    user_id = local_storage.getItem("user_id")
+
+    if not user_id:
+
+        user_id = str(uuid.uuid4())
+
+        local_storage.setItem(
+            "user_id",
+            user_id
+        )
+
+    return user_id
+
 
 def render_sidebar():
 
-
-    if "user_id" not in cookies:
-
-        cookies["user_id"] = generate_user_id()
-
-        cookies.save()
-
-    user_id = cookies["user_id"]
+    user_id = get_user_id()
 
     if "active_trip" not in st.session_state:
         st.session_state.active_trip = None
 
-   
     with st.sidebar:
 
-        # Logo
         st.markdown(
             """
             <div class="sidebar-logo-outer-div">
-            <div class="sidebar-logo2">
-                🌌
-            </div>
-            <div class="sidebar-logo">
-                Orbitly
-            </div>
+                <div class="sidebar-logo2">🌌</div>
+                <div class="sidebar-logo">Orbitly</div>
             </div>
             """,
             unsafe_allow_html=True
@@ -73,7 +57,6 @@ def render_sidebar():
 
         st.markdown("---")
 
-        # Current User
         st.markdown(
             f"""
             <div class="session-card">
@@ -90,7 +73,6 @@ def render_sidebar():
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Create Trip
         st.markdown(
             """
             <div class="side-title">
@@ -123,7 +105,6 @@ def render_sidebar():
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Load Trips from PostgreSQL
         trips = get_trips(user_id)
 
         if trips:
@@ -154,10 +135,11 @@ def render_sidebar():
                     key=trip_id,
                     use_container_width=True
                 ):
+
                     st.session_state.active_trip = trip_id
+
                     st.rerun()
 
-        # Active Trip Card
         if st.session_state.active_trip:
 
             st.markdown(
@@ -176,7 +158,6 @@ def render_sidebar():
 
         st.markdown("---")
 
-        # Tech Stack
         st.markdown(
             """
             <div class="side-title">
