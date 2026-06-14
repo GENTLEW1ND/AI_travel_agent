@@ -150,6 +150,7 @@ from langchain_core.messages import HumanMessage
 from frontend.constants import AGENT_META
 from frontend.utils.save_plan import save_travel_plan
 from frontend.utils.graph_manager import get_graph
+from frontend.utils.intent_classifier import classify_intent
 
 
 def run_pipeline(user_query, trip_id, user_id):
@@ -181,8 +182,37 @@ def run_pipeline(user_query, trip_id, user_id):
 
     progress_bar = st.progress(0)
     status_text = st.empty()
+    
+    
 
     try:
+        
+        intent = classify_intent(user_query)
+        
+        st.write("DEBUG intent:", intent)
+        print("DEBUG intent:", intent)
+        
+        if intent == "NON_TRAVEL":
+
+                st.info(
+                    """
+            I'm Orbitly 🌍
+
+            I can help with:
+
+            ✈️ Flights
+            🏨 Hotels
+            🗺️ Travel Itineraries
+            🌎 Destinations
+            💰 Travel Budgets
+
+            Please ask a travel-related question.
+            """
+                )
+
+                return
+    
+        
         travel_graph = get_graph()
 
         for i, chunk in enumerate(travel_graph.stream(
@@ -191,6 +221,7 @@ def run_pipeline(user_query, trip_id, user_id):
                 # Checkpointer restores all other state automatically
                 "messages": [HumanMessage(content=user_query)],
                 "user_query": user_query,
+                "trip_intent": intent,
             },
             config=config,
             stream_mode="updates",
@@ -200,6 +231,14 @@ def run_pipeline(user_query, trip_id, user_id):
 
             for node_name, state_update in chunk.items():
 
+                print("NODE:", node_name)
+                print("UPDATE:", state_update)
+                
+                if state_update is None:
+                    print("FOUND NONE UPDATE")
+                    continue
+                
+                
                 icon, label = AGENT_META.get(node_name, ("🔧", node_name))
                 status_text.text(f"{icon} {label} processing...")
 

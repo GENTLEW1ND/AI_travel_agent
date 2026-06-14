@@ -13,4 +13,3 @@ python-dotenv
 tavily-python
 requests
 streamlit
-streamlit-cookies-controller

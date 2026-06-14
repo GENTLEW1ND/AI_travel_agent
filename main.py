@@ -65,53 +65,65 @@ class TravelState(TypedDict):
 # INTENT AGENT
 # ==========================
 
-def intent_agent(state: TravelState):
+# def intent_agent(state: TravelState):
 
-    query = state["user_query"]
+#     query = state["user_query"]
 
-    response = llm.invoke([
-        SystemMessage(
-            content="""
-You are an intent classifier.
+#     response = llm.invoke([
+#         SystemMessage(
+#     content="""
+# You are an intent classifier for Orbitly, an AI travel planner.
 
-Classify the user's request into one of:
+# Classify the user query into exactly one category:
 
-NEW_TRIP
-- planning a completely new vacation
-- new destination unrelated to current itinerary
+# NEW_TRIP
+# - planning a vacation
+# - requesting a travel itinerary
+# - asking where to visit
+# - planning travel
 
-ADD_DESTINATION
-- add a city
-- add a destination
-- include another stop
-- extend itinerary
-- spend time in another location
-- also visit
-- include
-- add
-- cover
+# ADD_DESTINATION
+# - add another city
+# - extend itinerary
+# - include another stop
 
-MODIFY_TRIP
-- change budget
-- modify schedule
-- remove activities
-- replace hotel
-- adjust itinerary
+# MODIFY_TRIP
+# - modify an existing trip
+# - change budget
+# - remove activities
+# - change hotels
 
-Return ONLY:
+# NON_TRAVEL
+# - greetings
+# - small talk
+# - jokes
+# - coding questions
+# - personal questions
+# - random text
+# - unrelated requests
+# - gibberish
 
-NEW_TRIP
-ADD_DESTINATION
-MODIFY_TRIP
-"""
-),
-        HumanMessage(content=query)
-    ])
+# IMPORTANT:
 
-    return {
-        "trip_intent": response.content.strip(),
-        "llm_calls": state.get("llm_calls", 0) + 1
-    }
+# Only return NEW_TRIP, ADD_DESTINATION, or MODIFY_TRIP if the user is clearly requesting travel planning assistance.
+
+# Otherwise return NON_TRAVEL.
+
+# Return ONLY one of:
+
+# NEW_TRIP
+# ADD_DESTINATION
+# MODIFY_TRIP
+# NON_TRAVEL
+# """
+# ),
+#         HumanMessage(content=query)
+#     ])
+
+#     return {
+#     "trip_intent": response.content.strip().upper(),
+#     "llm_calls": state.get("llm_calls", 0) + 1
+#     }
 
 
 
@@ -252,6 +264,9 @@ Itinerary:
 # ROUTER
 # ==========================
 
+def router_node(state: TravelState):
+    return {}
+
 def route_trip(state: TravelState):
 
     intent = state["trip_intent"]
@@ -259,10 +274,41 @@ def route_trip(state: TravelState):
     if intent == "ADD_DESTINATION":
         return "add_destination"
 
-    if intent == "MODIFY_TRIP":
+    elif intent == "MODIFY_TRIP":
         return "modify_trip"
 
     return "new_trip"
+
+# ==========================
+# NON TRAVEL
+# ==========================
+
+# def non_travel_agent(state: TravelState):
+
+#     response = llm.invoke([
+#         SystemMessage(
+#             content="""
+# You are Orbitly, a travel planning assistant.
+
+# Politely explain that you only help with:
+
+# - Trip planning
+# - Flights
+# - Hotels
+# - Itineraries
+# - Destinations
+# - Travel budgets
+
+# Keep the response under 50 words.
+# """
+#         ),
+#         HumanMessage(content=state["user_query"])
+#     ])
+
+#     return {
+#         "messages": [response],
+#         "llm_calls": state.get("llm_calls", 0) + 1
+#     }
 
 
 # ==========================
@@ -271,7 +317,7 @@ def route_trip(state: TravelState):
 
 graph = StateGraph(TravelState)
 
-graph.add_node("intent_agent", intent_agent)
+graph.add_node("router", router_node)
 
 graph.add_node("flight_agent", flight_agent)
 
@@ -281,11 +327,10 @@ graph.add_node("itinerary_agent", itinerary_agent)
 
 graph.add_node("final_agent", final_agent)
 
-
-graph.add_edge(START, "intent_agent")
+graph.add_edge(START, "router")
 
 graph.add_conditional_edges(
-    "intent_agent",
+    "router",
     route_trip,
     {
         "new_trip": "flight_agent",
@@ -301,6 +346,7 @@ graph.add_edge("hotel_agent", "itinerary_agent")
 graph.add_edge("itinerary_agent", "final_agent")
 
 graph.add_edge("final_agent", END)
+
 
 # ==========================
 # POSTGRES CHECKPOINTER
@@ -318,7 +364,6 @@ def create_app():
     return graph.compile(
         checkpointer=checkpointer
     )
-
 # checkpointer.setup()
 
 # ==========================
@@ -339,19 +384,25 @@ if __name__ == "__main__":
 
     user_input = input("Travel Request: ")
 
+    trip_intent = input(
+        "Intent (NEW_TRIP / ADD_DESTINATION / MODIFY_TRIP): "
+    ).strip().upper()
+
     config = {
         "configurable": {
             "thread_id": trip_id
         }
     }
 
-    result = create_app.invoke(
+    app = create_app()
+
+    result = app.invoke(
         {
             "messages": [
                 HumanMessage(content=user_input)
             ],
             "user_query": user_input,
-            "trip_intent": "",
+            "trip_intent": trip_intent,
             "flight_results": "",
             "hotel_results": "",
             "itinerary": "",
@@ -363,9 +414,5 @@ if __name__ == "__main__":
     print("\nFinal Response:\n")
 
     for msg in result["messages"]:
-
         print(msg.content)
-
-        print(
-            "\n----------------------------------\n"
-        )
+        print("\n----------------------------------\n")
