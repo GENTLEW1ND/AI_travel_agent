@@ -8,171 +8,141 @@ app_port: 8501
 pinned: false
 ---
 
-# 🌌 Orbitly – AI Multi-Agent Travel Planner
+# 🌍 Orbitly – AI Travel Planning Assistant
 
-Orbitly is an AI-powered travel planning assistant built using LangGraph, Groq LLMs, PostgreSQL, Tavily Search, and Streamlit.
+Orbitly is a multi-agent AI travel planner that helps users create, modify, and extend personalized travel itineraries using LLM-powered reasoning, flight discovery, hotel recommendations, and travel intelligence.
 
-The application uses multiple specialized AI agents to collaboratively generate personalized travel itineraries, discover accommodations, retrieve travel information, and maintain conversation history across trips.
-
----
-
-## 🚀 Features
-
-### ✈️ Multi-Agent Architecture
-
-Orbitly uses a coordinated AI agent workflow:
-
-* Flight Agent
-
-  * Finds flight information for the destination.
-
-* Hotel Agent
-
-  * Searches for accommodation recommendations.
-
-* Itinerary Agent
-
-  * Creates detailed travel itineraries.
-
-* Orbit Core
-
-  * Generates the final travel plan.
+**Live Demo:** https://rajcby-orbitly.hf.space
 
 ---
 
-### 🧠 Persistent Trip Memory
+## ✨ Features
 
-Each trip is assigned a unique thread ID.
+### 🧠 Intelligent Travel Planning
 
-Examples:
+* Generate complete travel itineraries
+* Plan trips based on destination, budget, and duration
+* Get personalized recommendations
 
-* delhi_9d68cfdf
-* japan_bdc4917b
-* singapore_7ac1f0d2
+### ✈️ Flight Discovery
 
-Conversation history is stored in PostgreSQL using LangGraph Checkpointing.
+* Search and recommend relevant flight options
+* Integrates external travel APIs for flight information
+
+### 🏨 Hotel Recommendations
+
+* Discover hotels and accommodations
+* Curated using live web search
+
+### 🔄 Multi-Agent Workflow
+
+Orbitly uses a LangGraph-powered multi-agent architecture:
+
+1. Intent Agent
+2. Flight Agent
+3. Hotel Agent
+4. Itinerary Agent
+5. Final Concierge Agent
+
+Each agent performs a dedicated task and contributes to the final travel plan.
+
+### 📝 Trip Modification Support
 
 Users can:
 
-* Create multiple trips
-* Switch between trips
-* Continue planning existing trips
-* Maintain separate travel memories
+* Create new trips
+* Add destinations to existing trips
+* Modify budgets, activities, and preferences
 
----
+### 💾 Persistent Conversation Memory
 
-### 🔄 Context-Aware Planning
+* PostgreSQL Checkpointer
+* Conversation history stored using LangGraph checkpoints
+* Supports long-running travel planning sessions
 
-Orbitly identifies user intent and supports:
+### 📥 Export Travel Plans
 
-#### New Trip
-
-Example:
-
-Plan a 7-day trip to Delhi from Shillong
-
-#### Add Destination
-
-Example:
-
-Add Rishikesh to the itinerary
-
-#### Modify Trip
-
-Example:
-
-Reduce the budget
-Change hotels
-Add more activities
-
-The assistant updates existing plans while preserving previous context.
+* Download generated itineraries
+* Save trip plans for future reference
 
 ---
 
 ## 🏗️ Architecture
 
-User Input
-
-↓
-
+```text
+User Query
+     │
+     ▼
 Intent Agent
-
-↓
-
-Router
-
-↓
-
+     │
+     ▼
 Flight Agent
-
-↓
-
+     │
+     ▼
 Hotel Agent
-
-↓
-
+     │
+     ▼
 Itinerary Agent
-
-↓
-
-Final Agent
-
-↓
-
-PostgreSQL Checkpointer
+     │
+     ▼
+Final Concierge Agent
+     │
+     ▼
+Final Travel Plan
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-### AI & LLM
-
-* LangGraph
-* LangChain
-* Groq
-* LLaMA 3.3 70B
-
 ### Frontend
 
 * Streamlit
 
+### AI & Orchestration
+
+* LangGraph
+* LangChain
+* Groq LLM
+* Llama 3.3 70B Versatile
+
+### Search & Travel Intelligence
+
+* Tavily Search API
+* Flight Search API
+
 ### Database
 
 * PostgreSQL
-* LangGraph Checkpointing
+* LangGraph Postgres Checkpointer
 
-### Search & Retrieval
+### Deployment
 
-* Tavily Search API
-
-### Flight Search
-
-* Aviation APIs
+* Docker
+* Hugging Face Spaces
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-TravelAIAssistant/
-
+Orbitly/
+│
 ├── app.py
-
-├── main.py
-
+├── graph/
+│   └── travel_graph.py
+│
 ├── frontend/
 │   ├── components/
-│   ├── styles/
-│   └── utils/
-
+│   ├── utils/
+│   └── constants.py
+│
 ├── tools/
 │   ├── flight_tool.py
 │   └── tavily_tool.py
-
-├── .env
-
+│
 ├── requirements.txt
-
+├── Dockerfile
 └── README.md
 ```
 
@@ -187,76 +157,83 @@ GROQ_API_KEY=your_groq_key
 
 TAVILY_API_KEY=your_tavily_key
 
-DATABASE_URL=postgresql://username:password@localhost:5432/orbitly
+DATABASE_URL=postgresql://username:password@host:port/database
 ```
 
 ---
 
-## 🐘 PostgreSQL Setup
+## 🚀 Local Setup
 
-Create a PostgreSQL database:
-
-```sql
-CREATE DATABASE orbitly;
-```
-
-Create a trips table:
-
-```sql
-CREATE TABLE trips (
-    trip_id VARCHAR(255) PRIMARY KEY,
-    user_id VARCHAR(255),
-    destination VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-LangGraph automatically creates:
-
-* checkpoints
-* checkpoint_blobs
-* checkpoint_writes
-* checkpoint_migrations
-
-during startup.
-
----
-
-## ▶️ Run Locally
-
-Create virtual environment:
+### 1. Clone Repository
 
 ```bash
-python -m venv Langgraph_venv
+git clone <repository-url>
+
+cd Orbitly
 ```
 
-Activate:
-
-Linux / Mac
+### 2. Create Virtual Environment
 
 ```bash
-source Langgraph_venv/bin/activate
+python -m venv venv
+
+source venv/bin/activate
 ```
 
-Windows
-
-```bash
-Langgraph_venv\Scripts\activate
-```
-
-Install dependencies:
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run Streamlit:
+### 4. Run Application
 
 ```bash
 streamlit run app.py
 ```
 
 ---
+
+## 🐳 Docker Deployment
+
+Build Image:
+
+```bash
+docker build -t orbitly .
+```
+
+Run Container:
+
+```bash
+docker run -p 8501:8501 \
+-e GROQ_API_KEY=xxxxx \
+-e TAVILY_API_KEY=xxxxx \
+-e DATABASE_URL=xxxxx \
+orbitly
+```
+
+---
+
+## 🌐 Hugging Face Deployment
+
+Orbitly is deployed on Hugging Face Spaces:
+
+https://rajcby-orbitly.hf.space
+
+---
+
+## 🔮 Future Enhancements
+
+* Real-time flight pricing
+* Hotel booking integrations
+* Visa requirement assistance
+* Interactive travel maps
+* Multi-user trip collaboration
+* Cost optimization recommendations
+* Travel document generation
+
+---
+
 
 ## 🌍 Example Workflow
 
@@ -303,6 +280,12 @@ Contributions, issues, and feature requests are welcome.
 Feel free to fork the repository and submit pull requests.
 
 ---
+
+## 👨‍💻 Author
+
+Raj Chakraborty
+
+Software Engineer | Automation Engineer | AI Enthusiast
 
 ## 📜 License
 
