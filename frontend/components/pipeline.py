@@ -165,7 +165,7 @@ def run_pipeline(user_query, trip_id, user_id):
         }
     }
 
-    print(f"DEBUG pipeline — thread_id: {thread_id}")
+    print(f"pipeline — thread_id: {thread_id}")
 
     collected = {
         "flight_results": "",
@@ -189,8 +189,8 @@ def run_pipeline(user_query, trip_id, user_id):
         
         intent = classify_intent(user_query)
         
-        st.write("DEBUG intent:", intent)
-        print("DEBUG intent:", intent)
+        st.write("Intent:", intent)
+        # print("DEBUG intent:", intent)
         
         if intent == "NON_TRAVEL":
 
