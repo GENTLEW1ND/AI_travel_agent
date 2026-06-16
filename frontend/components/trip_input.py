@@ -34,10 +34,11 @@ def render_trip_input():
             ):
 
                 st.session_state.trip_query = prompt["label"]
-
+                st.rerun()
+                
     # Text area
     user_query = st.text_area(
-        "",
+        "Trip Description",
         value=st.session_state.trip_query,
         placeholder="✍️ Example: Plan a 7 days trip to Thailand from Mumbai under 50k budget.",
         height=140,
@@ -58,4 +59,11 @@ def render_trip_input():
             type="primary"
         )
 
-    return user_query, generate
+    if generate:
+        query_to_process = user_query
+
+        st.session_state.trip_query = ""
+
+        return query_to_process, True
+
+    return user_query, False    

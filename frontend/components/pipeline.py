@@ -280,8 +280,33 @@ def run_pipeline(user_query, trip_id, user_id):
         status_text.empty()
 
     except Exception as e:
-        st.error(f"Pipeline error: {str(e)}")
+
+        error_msg = str(e)
+
+        if (
+            "Request too large" in error_msg
+            or "rate_limit_exceeded" in error_msg
+            or "tokens per minute" in error_msg
+        ):
+
+            st.warning(
+                """
+    ### ⚠️ Conversation Limit Reached
+
+    This trip conversation has become too large to process.
+
+    Please start a **new trip chat** to continue planning.
+
+    Creating a new chat will reset the conversation context and improve performance.
+    """
+            )
+
+        else:
+            st.error(f"Pipeline error: {error_msg}")
+
         return
+
+
 
     st.markdown(
         f"""
